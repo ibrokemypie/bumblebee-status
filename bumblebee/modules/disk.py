@@ -21,22 +21,20 @@ import bumblebee.engine
 class Module(bumblebee.engine.Module):
     def __init__(self, engine, config):
         super(Module, self).__init__(engine, config,
-            bumblebee.output.Widget(full_text=self.diskspace)
-        )
+                                     bumblebee.output.Widget(full_text=self.diskspace))
         self._path = self.parameter("path", "/")
         self._sused = self.parameter("showUsed", "yes")
         self._ssize = self.parameter("showSize", "yes")
         self._spercent = self.parameter("showPercent", "yes")
-        self._app = self.parameter("open", "xdg-open")
         self._perc = 0
         self._used = 0
         self._size = 0
 
         engine.input.register_callback(self, button=bumblebee.input.LEFT_MOUSE,
-                                       cmd="{} {}".format(self._app,
+                                       cmd="{} {}".format(self.parameter("open", "xdg-open"),
                                                           self._path))
 
-    def diskspace(self, widget):
+    def diskspace(self, _):
         if self._sused == "yes":
             used_str = bumblebee.util.bytefmt(self._used)
         else:
@@ -61,12 +59,12 @@ class Module(bumblebee.engine.Module):
                                                percent_str)
 
     def update(self, widgets):
-        st = os.statvfs(self._path)
-        self._size = st.f_blocks * st.f_frsize
-        self._used = (st.f_blocks - st.f_bfree) * st.f_frsize
+        stat = os.statvfs(self._path)
+        self._size = stat.f_blocks * stat.f_frsize
+        self._used = (stat.f_blocks - stat.f_bfree) * stat.f_frsize
         self._perc = 100.0*self._used/self._size
 
-    def state(self, widget):
+    def state(self, _):
         return self.threshold_state(self._perc, 80, 90)
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
