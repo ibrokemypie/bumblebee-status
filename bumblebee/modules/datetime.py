@@ -12,7 +12,7 @@ from __future__ import absolute_import
 import datetime
 import bumblebee.engine
 
-ALIASES = [ "date", "time" ]
+ALIASES = ["date", "time"]
 
 def default_format(module):
     default = "%x %X"
@@ -25,11 +25,10 @@ def default_format(module):
 class Module(bumblebee.engine.Module):
     def __init__(self, engine, config):
         super(Module, self).__init__(engine, config,
-            bumblebee.output.Widget(full_text=self.get_time)
-        )
+                                     bumblebee.output.Widget(full_text=self.get_time))
         self._fmt = self.parameter("format", default_format(self.name))
 
-    def get_time(self, widget):
+    def get_time(self, _):
         return datetime.datetime.now().strftime(self._fmt)
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
